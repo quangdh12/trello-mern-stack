@@ -1,17 +1,22 @@
 import { Lock, LockReset, Logout, Password } from '@mui/icons-material';
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
+import { logoutUserAPI, updateUserAPI } from '~/redux/user/userSlice';
 import { FIELD_REQUIRED_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '~/utils/validator';
 
 const SecurityTab = () => {
+    const dispatch = useDispatch();
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
-
+    const [validate, setValidate] = useState(false);
     const confirmChangePassword = useConfirm();
     const submitChangePassword = (data) => {
         confirmChangePassword({
@@ -26,9 +31,24 @@ const SecurityTab = () => {
             cancellationText: 'Cancel',
         })
             .then(() => {
-                const { currentPassword, newPassword, newPasswordConfirmation } = data;
+                setValidate(true);
+                const { currentPassword, newPassword } = data;
+
+                toast
+                    .promise(dispatch(updateUserAPI({ currentPassword, newPassword })), {
+                        pending: 'Updating...',
+                    })
+                    .then((res) => {
+                        if (!res.error) {
+                            toast.success('Successfully changed your password, please re-login!');
+                            dispatch(logoutUserAPI(false));
+                        }
+                    });
             })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => {
+                setValidate(false);
+            });
     };
 
     return (
@@ -76,7 +96,7 @@ const SecurityTab = () => {
                                         message: PASSWORD_RULE_MESSAGE,
                                     },
                                 })}
-                                error={!!errors['currentPassword']}
+                                error={validate && !!errors['currentPassword']}
                             />
                             <FieldErrorAlert errors={errors} fieldName={'currentPassword'} />
                         </Box>
@@ -101,7 +121,7 @@ const SecurityTab = () => {
                                         message: PASSWORD_RULE_MESSAGE,
                                     },
                                 })}
-                                error={!!errors['newPassword']}
+                                error={validate && !!errors['newPassword']}
                             />
                             <FieldErrorAlert errors={errors} fieldName={'newPassword'} />
                         </Box>
@@ -126,7 +146,7 @@ const SecurityTab = () => {
                                         message: PASSWORD_RULE_MESSAGE,
                                     },
                                 })}
-                                error={!!errors['newPasswordConfirmation']}
+                                error={validate && !!errors['newPasswordConfirmation']}
                             />
                             <FieldErrorAlert
                                 errors={errors}

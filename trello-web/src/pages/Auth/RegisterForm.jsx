@@ -15,14 +15,17 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUserAPI } from '~/apis';
 import { toast } from 'react-toastify';
+import { useState } from 'react';
 
 const RegisterForm = () => {
     const navigate = useNavigate()
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
+    const [validate, setValidate] = useState(false)
 
     const submitRegister = (data) => {
         const { email, password } = data
-        toast.promise(registerUserAPI({ email, password }).then((user) => navigate(`/login?registeredEmail=${user.email}`)), { pending: 'Waiting for registration...' })
+        setValidate(true)
+        toast.promise(registerUserAPI({ email, password }).then((user) => navigate(`/login?registeredEmail=${user.email}`)), { pending: 'Waiting for registration...' }).finally(() => setValidate(false))
     }
 
     return (<form onSubmit={handleSubmit(submitRegister)}>
@@ -46,7 +49,7 @@ const RegisterForm = () => {
                             label="Enter Email..."
                             type='text'
                             variant='outlined'
-                            error={!!errors['email']}
+                            error={validate &&!!errors['email']}
                             {...register('email', {
                                 required: FIELD_REQUIRED_MESSAGE,
                                 pattern: {
@@ -64,7 +67,7 @@ const RegisterForm = () => {
                             label="Enter Password..."
                             type='password'
                             variant='outlined'
-                            error={!!errors['password']}
+                            error={validate && !!errors['password']}
                             {...register('password', {
                                 required: FIELD_REQUIRED_MESSAGE,
                                 pattern: {
@@ -82,7 +85,7 @@ const RegisterForm = () => {
                             label="Enter Password Confirmation..."
                             type='password'
                             variant='outlined'
-                            error={!!errors['passwordConfirmation']}
+                            error={validate && !!errors['passwordConfirmation']}
                             {...register('passwordConfirmation', {
                                 validate: (value) => {
                                     if (value === watch('password')) {

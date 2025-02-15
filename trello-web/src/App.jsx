@@ -5,7 +5,7 @@ import Auth from './pages/Auth/Auth';
 import AccountVerification from './pages/Auth/AccountVerification';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from './redux/user/userSlice';
-import Settings from './pages/settings/Settings';
+import Settings from './pages/Settings/Settings';
 
 const ProtectedRoute = ({ user }) => {
   if (!user) return <Navigate to={'/login'} replace={true} />

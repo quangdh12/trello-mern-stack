@@ -10,9 +10,10 @@ import {
     Typography,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
-import { selectCurrentUser } from '~/redux/user/userSlice';
+import { selectCurrentUser, updateUserAPI } from '~/redux/user/userSlice';
 import { FIELD_REQUIRED_MESSAGE, singleFileValidator } from '~/utils/validator';
 
 const VisuallyHiddenInput = styled('input')({
@@ -28,6 +29,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const AccountTab = () => {
+    const dispatch = useDispatch();
     const currentUser = useSelector(selectCurrentUser);
 
     const initialGeneralForm = {
@@ -46,6 +48,16 @@ const AccountTab = () => {
         const { displayName } = data;
 
         if (displayName === currentUser?.displayName) return;
+
+        toast
+            .promise(dispatch(updateUserAPI({ displayName })), {
+                pending: 'Updating...',
+            })
+            .then((res) => {
+                if (!res.error) {
+                    toast.success('User updated successfully');
+                }
+            });
     };
 
     const uploadAvatar = (e) => {
