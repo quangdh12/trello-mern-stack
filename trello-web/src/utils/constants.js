@@ -14,3 +14,8 @@ export const TABS = {
     ACCOUNT: 'account',
     SECURITY: 'security'
 }
+
+export const BOARDS_TYPE = {
+    PUBLIC: 'public',
+    PRIVATE: 'private'
+}

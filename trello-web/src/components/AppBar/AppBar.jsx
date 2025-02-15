@@ -26,27 +26,40 @@ function AppBar() {
     const [searchValue, setSearchValue] = useState('');
 
     return (
-        <Box sx={{
-            width: '100%',
-            height: (theme) => theme.trello.appBarHeight,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 2,
-            paddingX: 2,
-            overflowX: 'auto',
-            '&::-webkit-scrollbar': { width: '8px', height: '8px' },
-            bgcolor: (theme) => (theme.palette.mode == 'dark' ? '#3b3b3b' : '#0032c7')
-        }}>
+        <Box
+            sx={{
+                width: '100%',
+                height: (theme) => theme.trello.appBarHeight,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 2,
+                paddingX: 2,
+                overflowX: 'auto',
+                '&::-webkit-scrollbar': { width: '8px', height: '8px' },
+                bgcolor: (theme) => (theme.palette.mode == 'dark' ? '#3b3b3b' : '#0032c7'),
+            }}
+        >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <AppsIcon sx={{ color: 'white' }} />
+                <Link to={'/boards'}>
+                    <Tooltip title="Board List">
+                        <AppsIcon sx={{ color: 'white', verticalAlign: 'middle' }} />
+                    </Tooltip>
+                </Link>
                 <Link to={'/'}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <SvgIcon component={TrelloIcon} fontSize='small' inheritViewBox sx={{ color: 'white' }} />
-                        <Typography variant='span' sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>
+                        <SvgIcon
+                            component={TrelloIcon}
+                            fontSize="small"
+                            inheritViewBox
+                            sx={{ color: 'white' }}
+                        />
+                        <Typography
+                            variant="span"
+                            sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}
+                        >
                             Trello
                         </Typography>
-
                     </Box>
                 </Link>
 
@@ -61,61 +74,61 @@ function AppBar() {
                             color: 'white',
                             border: 'none',
                             '&:hover': {
-                                border: 'none'
-                            }
+                                border: 'none',
+                            },
                         }}
-                        variant='outlined'
+                        variant="outlined"
                         startIcon={<LibraryAddIcon />}
                     >
                         Create
                     </Button>
                 </Box>
-
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <TextField
-                    id='outlined-search'
-                    label='Search...'
-                    type='text'
-                    size='small'
+                    id="outlined-search"
+                    label="Search..."
+                    type="text"
+                    size="small"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     InputProps={{
                         startAdornment: (
-                            <InputAdornment position='start'>
+                            <InputAdornment position="start">
                                 <Search sx={{ color: 'white' }} />
                             </InputAdornment>
                         ),
                         endAdornment: (
-                            <InputAdornment position='end'>
+                            <InputAdornment position="end">
                                 <CloseIcon
                                     sx={{
                                         color: searchValue ? 'white' : 'transparent',
-                                        cursor: 'pointer'
+                                        cursor: 'pointer',
                                     }}
                                     onClick={() => setSearchValue('')}
                                 />
                             </InputAdornment>
-                        )
+                        ),
                     }}
                     sx={{
                         minWidth: 120,
                         maxWidth: 180,
-                        '& label': { color: 'white', },
-                        '& input': { color: 'white', },
+                        '& label': { color: 'white' },
+                        '& input': { color: 'white' },
                         '& label.Mui-focused': { color: 'white' },
                         '& .MuiOutlinedInput-root': {
                             '& fieldset': {
-                                borderColor: 'white'
+                                borderColor: 'white',
                             },
                             '&:hover fieldset': {
-                                borderColor: 'white'
+                                borderColor: 'white',
                             },
                             '&.Mui-focused fieldset': {
-                                borderColor: 'white'
-                            }
-                        }
-                    }} />
+                                borderColor: 'white',
+                            },
+                        },
+                    }}
+                />
                 <ModeSelect />
                 <Tooltip title="Notifications">
                     <Badge color="warning" variant="dot" sx={{ cursor: 'pointer' }}>
@@ -129,7 +142,7 @@ function AppBar() {
                 <Profile />
             </Box>
         </Box>
-    )
+    );
 }
 
-export default AppBar
+export default AppBar;
