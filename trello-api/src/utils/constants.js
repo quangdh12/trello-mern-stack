@@ -20,3 +20,6 @@ export const WEBSITE_DOMAIN = (env.BUILD_MODE === 'production') ? env.WEBSITE_DO
 export const CLOUDINARY_FOLDER = {
     USERS: 'users',
 }
+
+export const DEFAULT_PAGE = 1
+export const DEFAULT_ITEMS_PER_PAGE = 10

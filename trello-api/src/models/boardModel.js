@@ -9,10 +9,12 @@ import { OBJECT_ID_RULE, OBJECT_RULE_MESSAGE } from '~/utils/validator'
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().required().min(3).max(150).trim().strict(),
-    type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
+    type: Joi.string().valid(...Object.values(BOARD_TYPES)),
     description: Joi.string().required().min(3).max(255).trim().strict(),
 
     columnOrderIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_RULE_MESSAGE)).default([]),
+    ownerIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_RULE_MESSAGE)).default([]),
+    memberIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_RULE_MESSAGE)).default([]),
     createdAt: Joi.date().timestamp('javascript').default(Date.now),
     updatedAt: Joi.date().timestamp('javascript').default(null),
     _destroy: Joi.boolean().default(false)
@@ -128,6 +130,40 @@ const update = async (boardId, updateData) => {
     }
 }
 
+const getBoards = async (userId, page, itemsPerPage) => {
+    try {
+        const queryConditions = [
+            { _destroy: false },
+            {
+                $or: [
+                    {
+                        ownerIds: { $all: [new ObjectId(userId)] },
+                        memberIds: { $all: [new ObjectId(userId)] }
+                    }
+                ]
+            }
+
+        ]
+
+        const query = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
+            { $match: { $and: queryConditions } },
+            { $sort: { title: 1 } },
+            { $facet: { 'queryBoards': [{ $skip: page > 0 ? (page - 1) * itemsPerPage : 0, $limit: itemsPerPage }], 'queryTotalBoards': [{ $count: 'total' }] } }
+        ], {
+            collation: { locale: 'en' }
+        }).toArray()
+
+        const res = query[0]
+
+        return {
+            boards: res.queryBoards || [],
+            totalBoards: res.queryTotalBoards[0]?.total || 0
+        }
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
@@ -136,5 +172,6 @@ export const boardModel = {
     getDetails,
     pushColumnOrderIds,
     update,
-    pullColumnOrderIds
+    pullColumnOrderIds,
+    getBoards
 }

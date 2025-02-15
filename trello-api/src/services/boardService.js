@@ -1,18 +1,17 @@
-import slugify from 'slugify'
 import ApiError from '~/config/ApiError'
 import { boardModel } from '~/models/boardModel'
 import { StatusCodes } from 'http-status-codes'
 import { cloneDeep } from 'lodash'
-import { BOARD_TYPES } from '~/utils/constants'
 import { columnModel } from '~/models/columnModel'
 import { cardModel } from '~/models/cardModel'
+import { slugify } from '~/utils/formatters'
+import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/utils/constants'
 
 const createNew = async (reqBody) => {
     try {
         const newBoard = {
             ...reqBody,
-            // slug: slugify(reqBody.title),
-            type: BOARD_TYPES.PUBLIC
+            slug: slugify(reqBody.title)
         }
         const createdBoard = await boardModel.createNew(newBoard)
         return await boardModel.findOneById(createdBoard.insertedId)
@@ -76,9 +75,20 @@ const moveCardToDifferentColumn = async (reqBody) => {
     }
 }
 
+const getBoards = async (userId, page = DEFAULT_PAGE, itemsPerPage = DEFAULT_ITEMS_PER_PAGE) => {
+    try {
+        const results = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10))
+
+        return results
+    } catch (error) {
+        throw error
+    }
+}
+
 export const boardService = {
     createNew,
     getDetails,
     update,
-    moveCardToDifferentColumn
+    moveCardToDifferentColumn,
+    getBoards
 }
