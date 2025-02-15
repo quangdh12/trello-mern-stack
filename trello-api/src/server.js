@@ -7,9 +7,18 @@ import { env } from '~/config/environments'
 import { APIs_V1 } from '~/routes/v1'
 import { corsOptions } from './config/cors'
 import { errorHandleMiddleware } from './middlewares/errorHandleMiddleware'
+import cookieParser from 'cookie-parser'
 
 const START_SERVER = () => {
     const app = express()
+
+    app.use((req, res, next) => {
+        res.set('Cache-control', 'no-store')
+        next()
+    })
+
+    // config Cookie Parser
+    app.use(cookieParser())
 
     app.use(cors(corsOptions))
     // enable req.body json data

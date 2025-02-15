@@ -1,7 +1,5 @@
 let apiRoot = ''
 
-console.log('import.meta.env::', import.meta.env);
-
 if (import.meta.env.MODE === 'development') {
     apiRoot = 'http://localhost:8017'
 }

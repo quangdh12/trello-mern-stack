@@ -7,7 +7,7 @@ let authorizedAxiosInstance = axios.create()
 authorizedAxiosInstance.defaults.timeout = 1000 * 60 * 5
 
 // send cookies each requests to BE
-// authorizedAxiosInstance.defaults.withCredentials = true
+authorizedAxiosInstance.defaults.withCredentials = true
 
 authorizedAxiosInstance.interceptors.request.use((config) => {
     interceptorLoadingElements(true);

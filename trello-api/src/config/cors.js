@@ -16,6 +16,6 @@ export const corsOptions = {
         return new ApiError(StatusCodes.FORBIDDEN, `${origin} not allowed by our cors POLICY.`)
     },
     optionSuccessStatus: 200,
-    Credentials: true
+    credentials: true
 }
 
