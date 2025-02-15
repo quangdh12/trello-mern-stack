@@ -16,3 +16,7 @@ export const USER_ROLES = {
 }
 
 export const WEBSITE_DOMAIN = (env.BUILD_MODE === 'production') ? env.WEBSITE_DOMAIN_PRO : env.WEBSITE_DOMAIN_DEV
+
+export const CLOUDINARY_FOLDER = {
+    USERS: 'users',
+}

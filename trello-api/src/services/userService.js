@@ -4,10 +4,11 @@ import { userModel } from '~/models/userModel'
 import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { pickUser } from '~/utils/formatters'
-import { WEBSITE_DOMAIN } from '~/utils/constants'
+import { CLOUDINARY_FOLDER, WEBSITE_DOMAIN } from '~/utils/constants'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { JwtProvider } from '~/providers/JwtProvider'
 import { env } from '~/config/environments'
+import { cloudinaryProvider } from '~/providers/CloudinaryProvider'
 
 const createNew = async (reqBody) => {
     try {
@@ -108,9 +109,44 @@ const refreshToken = async (clientRefreshToken) => {
     }
 }
 
+const update = async (userId, reqBody, userAvatarFile) => {
+    try {
+        const existedUser = await userModel.findOneById(userId)
+        if (!existedUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+        if (!existedUser.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!')
+
+        let updatedUser = {}
+
+        const { currentPassword, newPassword } = reqBody
+
+        if (currentPassword && newPassword) {
+            if (!bcryptjs.compareSync(currentPassword, existedUser.password)) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, 'Your current password is not correct!')
+            }
+
+            updatedUser = await userModel.update(existedUser._id, {
+                password: bcryptjs.hashSync(newPassword, 10)
+            })
+        } else if (userAvatarFile) {
+            const uploadResult = await cloudinaryProvider.streamUpload(userAvatarFile.buffer, CLOUDINARY_FOLDER.USERS)
+
+            updatedUser = await userModel.update(existedUser._id, {
+                avatar: uploadResult.secure_url
+            })
+        } else {
+            updatedUser = await userModel.update(existedUser._id, reqBody)
+        }
+
+        return pickUser(updatedUser)
+    } catch (error) {
+        throw error
+    }
+}
+
 export const userService = {
     createNew,
     verifyAccount,
     login,
-    refreshToken
+    refreshToken,
+    update
 }

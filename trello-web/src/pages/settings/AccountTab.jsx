@@ -62,6 +62,25 @@ const AccountTab = () => {
 
     const uploadAvatar = (e) => {
         const error = singleFileValidator(e.target?.files[0]);
+        if (error) {
+            toast.error(error);
+            return;
+        }
+
+        let reqData = new FormData();
+        reqData.append('avatar', e.target?.files[0]);
+
+        toast
+            .promise(dispatch(updateUserAPI(reqData)), {
+                pending: 'Updating...',
+            })
+            .then((res) => {
+                if (!res.error) {
+                    toast.success('User updated successfully');
+                }
+            });
+
+            e.target.value = ''
     };
 
     return (
