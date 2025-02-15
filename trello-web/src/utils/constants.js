@@ -10,3 +10,7 @@ if (import.meta.env.MODE === 'production') {
 
 export const API_ROOT = apiRoot
 
+export const TABS = {
+    ACCOUNT: 'account',
+    SECURITY: 'security'
+}
