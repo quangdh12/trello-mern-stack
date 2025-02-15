@@ -21,22 +21,22 @@ import { BrowserRouter } from 'react-router-dom'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter basename='/'>
-    <React.StrictMode>
-      <Provider store={store}>
-        <CssVarsProvider theme={theme}>
-          <ConfirmProvider defaultOptions={{
-            dialogProps: { maxWidth: 'xs' },
-            confirmationButtonProps: { color: 'primary', variant: 'contained' },
-            cancellationButtonProps: { color: 'inherit' },
-            buttonOrder: ['confirm', 'cancel']
-          }}>
-            <CssBaseline>
-              <App />
-              <ToastContainer theme='colored' position='bottom-left' />
-            </CssBaseline>
-          </ConfirmProvider>
-        </CssVarsProvider>
-      </Provider>
-    </React.StrictMode>
+    {/* <React.StrictMode> */}
+    <Provider store={store}>
+      <CssVarsProvider theme={theme}>
+        <ConfirmProvider defaultOptions={{
+          dialogProps: { maxWidth: 'xs' },
+          confirmationButtonProps: { color: 'primary', variant: 'contained' },
+          cancellationButtonProps: { color: 'inherit' },
+          buttonOrder: ['confirm', 'cancel']
+        }}>
+          <CssBaseline>
+            <App />
+            <ToastContainer theme='colored' position='bottom-left' />
+          </CssBaseline>
+        </ConfirmProvider>
+      </CssVarsProvider>
+    </Provider>
+    {/* </React.StrictMode> */}
   </BrowserRouter>
 )

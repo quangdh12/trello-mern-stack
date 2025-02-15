@@ -7,4 +7,9 @@ const Router = express.Router()
 Router.route('/register')
     .post(userValidation.createNew, userController.createNew)
 
+Router.route('/login')
+    .post(userValidation.login, userController.login)
+
+Router.route('/verify')
+    .put(userValidation.verifyAccount, userController.verifyAccount)
 export const userRoute = Router

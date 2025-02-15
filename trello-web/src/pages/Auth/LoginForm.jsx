@@ -12,9 +12,14 @@ import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, FIELD_REQUIRED_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '~/utils/validator';
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { loginUserAPI } from '~/redux/user/userSlice';
 
 const LoginForm = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { register, handleSubmit, formState: { errors } } = useForm()
     const [searchParams] = useSearchParams();
 
@@ -22,7 +27,16 @@ const LoginForm = () => {
     const verifiedEmail = searchParams.get('verifiedEmail')
 
     const submitLogin = (data) => {
-        console.log('Submit login')
+        const { email, password } = data
+
+        toast.promise(dispatch(loginUserAPI({ email, password })), {
+            pending: 'Logging in...'
+        }).then((res) => {
+            console.log(res)
+            if (!res.error) {
+                navigate('/')
+            }
+        })
     }
 
     return (<form onSubmit={handleSubmit(submitLogin)}>
