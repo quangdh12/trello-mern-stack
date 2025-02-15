@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { interceptorLoadingElements } from './formatters';
+import { logoutUserAPI } from '~/redux/user/userSlice';
+import { refreshTokenAPI } from '~/apis';
+
+let axiosReduxStore
+export const injectStore = mainStore => { axiosReduxStore = mainStore }
 
 let authorizedAxiosInstance = axios.create()
 
@@ -17,6 +22,8 @@ authorizedAxiosInstance.interceptors.request.use((config) => {
     return Promise.reject(error)
 })
 
+let refreshTokenPromise = null
+
 authorizedAxiosInstance.interceptors.response.use((response) => {
     interceptorLoadingElements(false);
 
@@ -24,6 +31,34 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
 }, (error) => {
 
     interceptorLoadingElements(false);
+
+    if (error.response?.status === 401) {
+        axiosReduxStore.dispatch(logoutUserAPI(false))
+    }
+
+    const originalRequests = error.config
+    if (error.response?.status === 410 && !originalRequests._retry) {
+        originalRequests._retry = true
+
+        if (!refreshTokenPromise) {
+            refreshTokenPromise = refreshTokenAPI()
+                .then(data => {
+                    return data?.accessToken
+                })
+                .catch((_error) => {
+                    axiosReduxStore.dispatch(logoutUserAPI(false))
+                    return Promise.reject(_error)
+                })
+                .finally(() => {
+                    refreshTokenPromise = null
+                })
+        }
+
+        // eslint-disable-next-line no-unused-vars
+        return refreshTokenPromise.then(accessToken => {
+            return authorizedAxiosInstance(originalRequests)
+        })
+    }
 
     let errorMessage = error?.message
     if (error.response?.data?.message) {
