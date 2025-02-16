@@ -11,6 +11,7 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().required().min(3).max(150).trim().strict(),
     type: Joi.string().valid(...Object.values(BOARD_TYPES)),
     description: Joi.string().required().min(3).max(255).trim().strict(),
+    slug: Joi.string().trim().strict(),
 
     columnOrderIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_RULE_MESSAGE)).default([]),
     ownerIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_RULE_MESSAGE)).default([]),
@@ -26,11 +27,16 @@ const validateBeforeCreate = async (data) => {
     return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
 
-const createNew = async (data) => {
+const createNew = async (userId, data) => {
     try {
         const validData = await validateBeforeCreate(data)
 
-        return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validData)
+        const newBoardToAdd = {
+            ...validData,
+            ownerIds: [new ObjectId(userId)]
+        }
+
+        return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(newBoardToAdd)
     } catch (error) {
         throw new Error(error)
     }
@@ -46,14 +52,23 @@ const findOneById = async (id) => {
     }
 }
 
-const getDetails = async (boardId) => {
+const getDetails = async (userId, boardId) => {
     try {
+        const queryConditions = [
+            { _id: new ObjectId(boardId) },
+            { _destroy: false },
+            {
+                $or: [
+                    { ownerIds: { $all: [new ObjectId(userId)] } },
+                    { memberIds: { $all: [new ObjectId(userId)] } }
+                ]
+            }
+
+        ]
+
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
             {
-                $match: {
-                    _id: new ObjectId(boardId),
-                    _destroy: false
-                }
+                $match: { $and: queryConditions }
             },
             {
                 $lookup: {
@@ -131,15 +146,14 @@ const update = async (boardId, updateData) => {
 }
 
 const getBoards = async (userId, page, itemsPerPage) => {
+
     try {
         const queryConditions = [
             { _destroy: false },
             {
                 $or: [
-                    {
-                        ownerIds: { $all: [new ObjectId(userId)] },
-                        memberIds: { $all: [new ObjectId(userId)] }
-                    }
+                    { ownerIds: { $all: [new ObjectId(userId)] } },
+                    { memberIds: { $all: [new ObjectId(userId)] } }
                 ]
             }
 
@@ -148,7 +162,7 @@ const getBoards = async (userId, page, itemsPerPage) => {
         const query = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
             { $match: { $and: queryConditions } },
             { $sort: { title: 1 } },
-            { $facet: { 'queryBoards': [{ $skip: page > 0 ? (page - 1) * itemsPerPage : 0, $limit: itemsPerPage }], 'queryTotalBoards': [{ $count: 'total' }] } }
+            { $facet: { 'queryBoards': [{ $skip: page > 0 ? (page - 1) * itemsPerPage : 0 }, { $limit: itemsPerPage }], 'queryTotalBoards': [{ $count: 'total' }] } }
         ], {
             collation: { locale: 'en' }
         }).toArray()
