@@ -3,6 +3,17 @@ import authorizedAxiosInstance from '~/utils/authorizeAxios';
 import { toast } from 'react-toastify';
 
 /** Board API  */
+export const createNewBoardAPI = async (data) => {
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/boards`, data)
+    toast.success('Created board successfully!')
+    return response.data
+}
+
+export const fetchBoardsAPI = async (searchPath) => {
+    const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/boards${searchPath}`)
+    return response.data
+}
+
 export const fetchBoardDetailsAPI = async (boardId) => {
     const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/boards/${boardId}`);
 

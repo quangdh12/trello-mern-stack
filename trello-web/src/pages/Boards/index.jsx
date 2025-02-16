@@ -3,6 +3,7 @@ import {
     Box,
     Card,
     CardContent,
+    CardMedia,
     Container,
     Divider,
     Pagination,
@@ -18,6 +19,8 @@ import { Link, useLocation } from 'react-router-dom';
 import AppBar from '~/components/AppBar/AppBar';
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner';
 import SidebarCreateBoardModal from './create';
+import { fetchBoardsAPI } from '~/apis';
+import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/utils/constants';
 
 export const SidebarItem = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -45,10 +48,15 @@ const Boards = () => {
 
     const page = parseInt(query.get('page') || '1', 10);
 
+    const fetchBoards = (query) => {
+        fetchBoardsAPI(query).then((res) => {
+            setBoards(res.boards || []);
+            setTotalBoards(res.totalBoards || 0);
+        });
+    };
     useEffect(() => {
-        setBoards([...Array(16)].map((_, i) => i));
-        setTotalBoards(100);
-    }, []);
+        fetchBoards(location.search);
+    }, [location.search]);
 
     if (!boards) {
         return <PageLoadingSpinner caption={'Loading Boards...'} />;
@@ -76,7 +84,7 @@ const Boards = () => {
                         </Stack>
                         <Divider sx={{ my: 1 }} />
                         <Stack direction={'column'} spacing={1}>
-                            <SidebarCreateBoardModal />
+                            <SidebarCreateBoardModal fetchBoards={fetchBoards} />
                         </Stack>
                     </Grid>
 
@@ -91,14 +99,19 @@ const Boards = () => {
                         )}
                         <Grid container spacing={2}>
                             {boards.map((board) => (
-                                <Grid xs={2} sm={3} md={4} key={board}>
-                                    <Card sx={{ width: '250p' }}>
+                                <Grid xs={4} sm={4} md={4} key={board._id}>
+                                    <Card sx={{ width: '250px' }}>
+                                        {/* <CardMedia
+                                            component={'img'}
+                                            height="100"
+                                            image="https://picsum.photos/100"
+                                        /> */}
                                         <Box
                                             sx={{ height: '50px', backgroundColor: randomColor() }}
                                         ></Box>
                                         <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
                                             <Typography gutterBottom variant="h6" component={'div'}>
-                                                Board Title
+                                                {board?.title}
                                             </Typography>
                                             <Typography
                                                 variant="body2"
@@ -109,12 +122,11 @@ const Boards = () => {
                                                     textOverflow: 'ellipsis',
                                                 }}
                                             >
-                                                We cannot solve problems with the kind of thinking
-                                                we employed when we came up with them.
+                                                {board?.description}
                                             </Typography>
                                             <Box
                                                 component={Link}
-                                                to="/board/"
+                                                to={`/boards/${board._id}`}
                                                 sx={{
                                                     mt: 1,
                                                     display: 'flex',
@@ -143,21 +155,27 @@ const Boards = () => {
                                 justifyContent: 'flex-end',
                             }}
                         >
-                            <Pagination
-                                size="large"
-                                color="secondary"
-                                showFirstButton
-                                showLastButton
-                                count={Math.ceil(totalBoards / 10)}
-                                page={page}
-                                renderItem={(item) => (
-                                    <PaginationItem
-                                        component={Link}
-                                        to={`/boards${item.page === 1 ? '' : `?page=${item.page}`}`}
-                                        {...item}
-                                    />
-                                )}
-                            />
+                            {boards.length > 0 && (
+                                <Pagination
+                                    size="large"
+                                    color="secondary"
+                                    showFirstButton
+                                    showLastButton
+                                    count={Math.ceil(totalBoards / DEFAULT_ITEMS_PER_PAGE)}
+                                    page={page}
+                                    renderItem={(item) => (
+                                        <PaginationItem
+                                            component={Link}
+                                            to={`/boards${
+                                                item.page === DEFAULT_PAGE
+                                                    ? ''
+                                                    : `?page=${item.page}`
+                                            }`}
+                                            {...item}
+                                        />
+                                    )}
+                                />
+                            )}
                         </Box>
                     </Grid>
                 </Grid>

@@ -16,8 +16,9 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
 import { BOARDS_TYPE } from '~/utils/constants';
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validator';
 import { SidebarItem } from '.';
+import { createNewBoardAPI } from '~/apis';
 
-const SidebarCreateBoardModal = () => {
+const SidebarCreateBoardModal = ({ fetchBoards }) => {
     const {
         register,
         control,
@@ -35,7 +36,17 @@ const SidebarCreateBoardModal = () => {
 
     const handleOpenModal = () => setIsOpen(true);
 
-    const submitCreateNewBoard = (data) => {};
+    const submitCreateNewBoard = (data) => {
+        setValidate(true);
+        createNewBoardAPI(data)
+            .then(() => {
+                handleCloseModal();
+            })
+            .finally(() => {
+                setValidate(false);
+                fetchBoards();
+            });
+    };
 
     return (
         <>
@@ -177,14 +188,24 @@ const SidebarCreateBoardModal = () => {
                                         alignSelf: 'flex-end',
                                     }}
                                 >
-                                    <Button
-                                        className="interceptor-loading"
-                                        type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                    >
-                                        Create
-                                    </Button>
+                                    <Box sx={{ display: 'flex', gap: 2 }}>
+                                        <Button
+                                            type="button"
+                                            variant="contained"
+                                            color="inherit"
+                                            onClick={handleCloseModal}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            className="interceptor-loading"
+                                            type="submit"
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            Create
+                                        </Button>
+                                    </Box>
                                 </Box>
                             </Box>
                         </form>

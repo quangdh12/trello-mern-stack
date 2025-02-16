@@ -88,17 +88,6 @@ function Board() {
         })
     }
 
-    const updateTitleColumn = async (newColumnData) => {
-        const { columnId, title } = newColumnData
-        const newBoard = { ...board };
-        const columnToUpdate = newBoard.columns.find(column => column._id === columnId);
-        if (columnToUpdate) {
-            columnToUpdate.title = title;
-        }
-        dispatch(updateCurrentActiveBoard(newBoard));
-
-        await updateColumnDetailsAPI(columnId, { title: title });
-    }
 
     const updateTitleCard = async (newCardData) => {
         const { cardId, title, columnId } = newCardData
@@ -126,10 +115,8 @@ function Board() {
             <BoardBar board={board} />
             <BoardContent
                 board={board}
-                // createNewCard={createNewCard}
 
                 deleteCardDetails={deleteCardDetails}
-                updateTitleColumn={updateTitleColumn}
                 updateTitleCard={updateTitleCard}
 
                 moveColumns={moveColumns}

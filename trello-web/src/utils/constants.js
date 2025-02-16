@@ -19,3 +19,6 @@ export const BOARDS_TYPE = {
     PUBLIC: 'public',
     PRIVATE: 'private'
 }
+
+export const DEFAULT_PAGE = 1
+export const DEFAULT_ITEMS_PER_PAGE = 10

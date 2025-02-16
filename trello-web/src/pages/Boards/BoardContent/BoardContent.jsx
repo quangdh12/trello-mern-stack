@@ -24,7 +24,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
     CARD: 'card'
 }
 
-function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCartToDifferentColumn, updateTitleColumn, updateTitleCard, deleteCardDetails }) {
+function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCartToDifferentColumn, updateTitleCard, deleteCardDetails }) {
 
     const [orderedColumns, setOrderedColumns] = useState([]);
 
@@ -260,7 +260,6 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCartToD
             }}>
                 <ListColumn
                     columns={orderedColumns}
-                    updateTitleColumn={updateTitleColumn}
                     updateTitleCard={updateTitleCard}
                     deleteCardDetails={deleteCardDetails}
                 />
