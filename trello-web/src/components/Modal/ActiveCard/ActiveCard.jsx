@@ -19,7 +19,6 @@ import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 
 import { Box, Divider, Modal, Stack, styled, Typography } from '@mui/material';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { singleFileValidator } from '~/utils/validator';
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput';
@@ -32,8 +31,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     clearCurrentActiveCard,
     selectCurrentActiveCard,
+    updateCurrentActiveCard,
 } from '~/redux/activeCard/activeCardSlice';
 import { updateCardDetailsAPI } from '~/apis';
+import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice';
 
 const SidebarItem = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -42,7 +43,7 @@ const SidebarItem = styled(Box)(({ theme }) => ({
     cursor: 'pointer',
     fontsize: '14px',
     fontWeight: 600,
-    color: theme.palette.mode === 'dark' ? '#90caf9': '#172b4d',
+    color: theme.palette.mode === 'dark' ? '#90caf9' : '#172b4d',
     backgroundColor: theme.palette.mode === 'dark' ? '#2f3542' : '#091e420f',
     padding: '10px',
     borderRadius: '4px',
@@ -65,8 +66,9 @@ const ActiveCard = () => {
 
     const callApiUpdateCard = async (updateData) => {
         const updatedCard = await updateCardDetailsAPI(activeCard._id, updateData);
-        dispatch(updateCardDetailsAPI(updatedCard));
+        dispatch(updateCurrentActiveCard(updatedCard));
 
+        dispatch(updateCardInBoard(updatedCard));
         return updatedCard;
     };
 

@@ -28,6 +28,18 @@ export const activeBoardSlice = createSlice({
             const fullBoard = action.payload
 
             state.currentActiveBoard = fullBoard
+        },
+        updateCardInBoard: (state, action) => {
+            const incomingCard = action.payload
+
+            const column = state.currentActiveBoard.columns.find((column) => column._id === incomingCard.columnId)
+
+            if (column) {
+                const card = column.cards.find((card) => card._id === incomingCard._id)
+                if (card) {
+                    card.title = incomingCard.title
+                }
+            }
         }
     },
     extraReducers: (builder) => {
@@ -50,7 +62,7 @@ export const activeBoardSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { updateCurrentActiveBoard } = activeBoardSlice.actions
+export const { updateCurrentActiveBoard, updateCardInBoard } = activeBoardSlice.actions
 
 export const selectCurrentActiveBoard = (state) => {
     return state.activeBoard.currentActiveBoard

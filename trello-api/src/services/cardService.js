@@ -28,8 +28,8 @@ const update = async (cardId, reqBody) => {
             updatedAt: Date.now()
         }
 
-        const updatedColumn = await cardModel.update(cardId, updateData)
-        return updatedColumn
+        const updatedCard = await cardModel.update(cardId, updateData)
+        return updatedCard
     } catch (error) {
         throw error
     }
