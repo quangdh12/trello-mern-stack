@@ -31,7 +31,7 @@ import {
 } from '~/redux/activeBoard/activeBoardSlice';
 import ListCard from './ListCard/ListCard';
 
-function Column({ column, updateTitleCard, deleteCardDetails }) {
+function Column({ column, updateTitleCard }) {
     const board = useSelector(selectCurrentActiveBoard);
     const dispatch = useDispatch();
 
@@ -255,7 +255,6 @@ function Column({ column, updateTitleCard, deleteCardDetails }) {
                 <ListCard
                     cards={orderedCards}
                     updateTitleCard={updateTitleCard}
-                    deleteCardDetails={deleteCardDetails}
                 />
 
                 {/* Box Column Footer*/}

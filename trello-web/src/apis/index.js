@@ -64,6 +64,7 @@ export const deleteCardDetailsAPI = async (columnId, cardId) => {
     return response.data;
 }
 
+
 /**
  * User
  **/

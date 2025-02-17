@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentActiveBoard, updateCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 
 
-function ListColumn({ columns, updateTitleCard, deleteCardDetails }) {
+function ListColumn({ columns, updateTitleCard }) {
     const board = useSelector(selectCurrentActiveBoard)
     const dispatch = useDispatch()
 
@@ -76,7 +76,6 @@ function ListColumn({ columns, updateTitleCard, deleteCardDetails }) {
                     <Column key={column._id}
                         column={column}
                         updateTitleCard={updateTitleCard}
-                        deleteCardDetails={deleteCardDetails}
                     />
                 ))}
 

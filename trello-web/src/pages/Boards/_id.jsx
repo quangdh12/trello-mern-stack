@@ -128,7 +128,6 @@ function Board() {
             <BoardBar board={board} />
             <BoardContent
                 board={board}
-                deleteCardDetails={deleteCardDetails}
                 updateTitleCard={updateTitleCard}
                 moveColumns={moveColumns}
                 moveCardInTheSameColumn={moveCardInTheSameColumn}

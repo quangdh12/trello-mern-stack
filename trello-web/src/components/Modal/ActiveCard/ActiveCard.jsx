@@ -33,6 +33,7 @@ import {
     clearCurrentActiveCard,
     selectCurrentActiveCard,
 } from '~/redux/activeCard/activeCardSlice';
+import { updateCardDetailsAPI } from '~/apis';
 
 const SidebarItem = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -41,7 +42,8 @@ const SidebarItem = styled(Box)(({ theme }) => ({
     cursor: 'pointer',
     fontsize: '14px',
     fontWeight: 600,
-    // color: theme.palette.mode === 'dark' ? '#2f3542' : '#091e420f',
+    color: theme.palette.mode === 'dark' ? '#90caf9': '#172b4d',
+    backgroundColor: theme.palette.mode === 'dark' ? '#2f3542' : '#091e420f',
     padding: '10px',
     borderRadius: '4px',
     '&:hover': {
@@ -61,7 +63,16 @@ const ActiveCard = () => {
         dispatch(clearCurrentActiveCard());
     };
 
-    const onUpdateCardTitle = (newTitle) => {};
+    const callApiUpdateCard = async (updateData) => {
+        const updatedCard = await updateCardDetailsAPI(activeCard._id, updateData);
+        dispatch(updateCardDetailsAPI(updatedCard));
+
+        return updatedCard;
+    };
+
+    const onUpdateCardTitle = (newTitle) => {
+        callApiUpdateCard({ title: newTitle.trim() });
+    };
 
     const handleUploadCardCover = (e) => {
         const error = singleFileValidator(e.target?.files[0]);
@@ -79,7 +90,6 @@ const ActiveCard = () => {
                 sx={{
                     position: 'relative',
                     width: 900,
-                    height: 900,
                     bgcolor: 'white',
                     boxShadow: 24,
                     borderRadius: '8px',

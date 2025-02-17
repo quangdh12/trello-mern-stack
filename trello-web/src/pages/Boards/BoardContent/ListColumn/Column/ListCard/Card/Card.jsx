@@ -2,22 +2,19 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import CommentIcon from '@mui/icons-material/Comment';
-import DeleteIcon from '@mui/icons-material/Delete';
 import GroupIcon from '@mui/icons-material/Group';
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import { Box, ClickAwayListener, IconButton, Card as MuiCard, TextField } from '@mui/material';
+import { Box, ClickAwayListener, Card as MuiCard, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { useConfirm } from 'material-ui-confirm';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice';
 
-function Card({ card, updateTitleCard, deleteCardDetails }) {
+function Card({ card, updateTitleCard }) {
     const dispatch = useDispatch();
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -40,21 +37,7 @@ function Card({ card, updateTitleCard, deleteCardDetails }) {
 
     const [newCardTitle, setNewCardTitle] = useState(card?.title);
     const [editTitleCardForm, setEditTitleCardForm] = useState(false);
-    const handleClickEditColumnForm = () => {
-        setEditTitleCardForm(true);
-    };
 
-    const confirmDeleteColumn = useConfirm();
-    const handleDeleteColumn = async () => {
-        confirmDeleteColumn({
-            title: 'Delete Card',
-            description: 'This action will permanently delete this Card! Are you sure?',
-        })
-            .then(() => {
-                deleteCardDetails(card._id, card.columnId);
-            })
-            .catch((_) => {});
-    };
 
     const updateCard = async () => {
         if (!newCardTitle) {
@@ -178,14 +161,6 @@ function Card({ card, updateTitleCard, deleteCardDetails }) {
                 ) : (
                     <>
                         <Typography>{card?.title}</Typography>
-                        <Box>
-                            <IconButton onClick={handleDeleteColumn}>
-                                <DeleteIcon fontSize="small" className="delete-icon" />
-                            </IconButton>
-                            <IconButton onClick={handleClickEditColumnForm}>
-                                <ModeEditIcon fontSize="small" className="mode-edit-icon" />
-                            </IconButton>
-                        </Box>
                     </>
                 )}
             </CardContent>
