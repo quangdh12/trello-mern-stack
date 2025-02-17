@@ -22,3 +22,4 @@ export const BOARDS_TYPE = {
 
 export const DEFAULT_PAGE = 1
 export const DEFAULT_ITEMS_PER_PAGE = 10
+export const LIMIT_USER_GROUP = 5
