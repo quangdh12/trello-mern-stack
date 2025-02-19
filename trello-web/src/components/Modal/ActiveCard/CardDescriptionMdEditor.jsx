@@ -4,36 +4,22 @@ import MDEditor from '@uiw/react-md-editor';
 import { useState } from 'react';
 import rehypeSanitize from 'rehype-sanitize';
 
-const markdownContent = `
-# Markdown Editor
 
----
-
-**Hello world!!!**
-
-[![](https://avatars.githubusercontent.com/u/1680273?s=80&v=4)](https://avatars.githubusercontent.com/u/1680273?v=4)
-
-\`\`\`javascript
-import React from "react";
-import ReactDOM from "react-dom";
-import MEDitor from '@uiw/react-md-editor';
-
-\`\`\`
-`;
-
-const CardDescriptionMdEditor = () => {
+const CardDescriptionMdEditor = ({ description, onUpdateDescription }) => {
     const { mode } = useColorScheme();
 
     const [markdownEditMode, setMarkdownEditMode] = useState(false);
-    const [cardDescription, setCardDescription] = useState(markdownContent);
+    const [cardDescription, setCardDescription] = useState(description);
 
     const handleUpdateCardDescription = () => {
         setMarkdownEditMode(false);
+
+        onUpdateDescription(cardDescription)
     };
 
     return (
         <Box sx={{ mt: -4 }}>
-            {markdownContent ? (
+            {markdownEditMode ? (
                 <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Box data-color-mode={mode}>
                         <MDEditor
@@ -74,8 +60,8 @@ const CardDescriptionMdEditor = () => {
                             source={cardDescription}
                             style={{
                                 whiteSpace: 'pre-wrap',
-                                padding: '10px',
-                                border: '0.5px solid rgba(0, 0, 0, 0.2)',
+                                padding: cardDescription ? '10px' : 0,
+                                border: cardDescription ? '0.5px solid rgba(0, 0, 0, 0.2)' : 'none',
                                 borderRadius: '8px',
                             }}
                         />

@@ -14,21 +14,21 @@ const BoardUserGroup = ({ boardUsers = [], limit = LIMIT_USER_GROUP }) => {
 
     return (
         <Box sx={{ display: 'flex', gap: '4px' }}>
-            {[...Array(16)].map((_, index) => {
+            {boardUsers.map((user, index) => {
                 if (index < limit) {
                     return (
-                        <Tooltip title="gindo.dev" key={index}>
+                        <Tooltip title={user?.displayName} key={user._id}>
                             <Avatar
                                 sx={{ width: 34, height: 34, cursor: 'pointer' }}
                                 alt="avatar-img"
-                                src=""
+                                src={user?.avatar}
                             />
                         </Tooltip>
                     );
                 }
             })}
 
-            {[...Array(16)].length > limit && (
+            {boardUsers.length > limit && (
                 <>
                     <Tooltip title="Show more">
                         <Box
@@ -48,7 +48,7 @@ const BoardUserGroup = ({ boardUsers = [], limit = LIMIT_USER_GROUP }) => {
                                 backgroundColor: '#a4b0be',
                             }}
                         >
-                            +{[...Array(16)].length - limit}
+                            +{boardUsers.length - limit}
                         </Box>
                     </Tooltip>
                     <Popover
@@ -67,14 +67,14 @@ const BoardUserGroup = ({ boardUsers = [], limit = LIMIT_USER_GROUP }) => {
                                 gap: 1,
                             }}
                         >
-                            {[...Array(16)].map((_, index) => (
-                                <Tooltip title="gindo.dev" key={index}>
-                                    <Avatar
-                                        sx={{ width: 34, height: 34, cursor: 'pointer' }}
-                                        alt="avatar-img"
-                                        src=""
-                                    />
-                                </Tooltip>
+                            {boardUsers.map((user) => (
+                                <Tooltip title={user?.displayName} key={user._id}>
+                                <Avatar
+                                    sx={{ width: 34, height: 34, cursor: 'pointer' }}
+                                    alt="avatar-img"
+                                    src={user?.avatar}
+                                />
+                            </Tooltip>
                             ))}
                         </Box>
                     </Popover>

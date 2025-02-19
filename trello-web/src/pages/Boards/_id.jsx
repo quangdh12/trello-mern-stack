@@ -4,16 +4,14 @@ import { cloneDeep } from 'lodash';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import {
-    deleteCardDetailsAPI,
     moveCartToDifferentColumnAPI,
     updateBoardDetailsAPI,
-    updateCardDetailsAPI,
-    updateColumnDetailsAPI,
+    updateColumnDetailsAPI
 } from '~/apis';
 import AppBar from '~/components/AppBar/AppBar';
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner';
+import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard';
 import {
     fetchBoardDetailsAPI,
     selectCurrentActiveBoard,
@@ -21,13 +19,10 @@ import {
 } from '~/redux/activeBoard/activeBoardSlice';
 import BoardBar from './BoardBar/BoardBar';
 import BoardContent from './BoardContent/BoardContent';
-import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard';
-import { selectCurrentActiveCard } from '~/redux/activeCard/activeCardSlice';
 
 function Board() {
     const dispatch = useDispatch();
     const board = useSelector(selectCurrentActiveBoard);
-    const activeCard = useSelector(selectCurrentActiveCard);
 
     const { boardId } = useParams();
 
@@ -35,7 +30,7 @@ function Board() {
         // const boardId = '67aa696306d04128739c7eff';
 
         dispatch(fetchBoardDetailsAPI(boardId));
-    }, [dispatch]);
+    }, [dispatch, boardId]);
 
     // FLow when to call API: Update state -> Call API
     const moveColumns = async (dndOrderedColumns) => {
@@ -90,45 +85,18 @@ function Board() {
         });
     };
 
-    const deleteCardDetails = (cardId, columnId) => {
-        const newBoard = { ...board };
-        const currentColumn = newBoard.columns.find((column) => column._id === columnId);
-        currentColumn.cards = currentColumn.cards.filter((card) => card._id !== cardId);
-        currentColumn.cardOrderIds = currentColumn.cardOrderIds.filter((_id) => _id !== cardId);
-        dispatch(updateCurrentActiveBoard(newBoard));
-
-        deleteCardDetailsAPI(columnId, cardId).then((res) => {
-            toast.success(res?.deleteResult);
-        });
-    };
-
-    const updateTitleCard = async (newCardData) => {
-        const { cardId, title, columnId } = newCardData;
-        const newBoard = { ...board };
-        const cardToUpdate = newBoard.columns
-            .find((column) => column._id === columnId)
-            .cards.find((card) => card._id === cardId);
-        if (cardToUpdate) {
-            cardToUpdate.title = title;
-        }
-        dispatch(updateCurrentActiveBoard(newBoard));
-
-        await updateCardDetailsAPI(cardId, { title, columnId });
-    };
-
     if (!board) {
         return <PageLoadingSpinner caption={'Loading Board...'} />;
     }
 
     return (
         <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
-            {activeCard && <ActiveCard />}
+            <ActiveCard />
 
             <AppBar />
             <BoardBar board={board} />
             <BoardContent
                 board={board}
-                updateTitleCard={updateTitleCard}
                 moveColumns={moveColumns}
                 moveCardInTheSameColumn={moveCardInTheSameColumn}
                 moveCartToDifferentColumn={moveCartToDifferentColumn}

@@ -24,7 +24,7 @@ const createNew = async (req, res, next) => {
 const update = async (req, res, next) => {
     const correctCondition = Joi.object({
         title: Joi.string().min(3).max(50).trim().strict(),
-        description: Joi.string().optional()
+        description: Joi.string().empty('').optional()
     })
 
     try {

@@ -29,8 +29,9 @@ import CardActivitySection from './CardActivitySection';
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    clearCurrentActiveCard,
+    clearAndHideCurrentActiveCard,
     selectCurrentActiveCard,
+    selectIsShowModalActiveCard,
     updateCurrentActiveCard,
 } from '~/redux/activeCard/activeCardSlice';
 import { updateCardDetailsAPI } from '~/apis';
@@ -59,9 +60,10 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 const ActiveCard = () => {
     const dispatch = useDispatch();
     const activeCard = useSelector(selectCurrentActiveCard);
+    const isShowModalActiveCard = useSelector(selectIsShowModalActiveCard);
 
     const handleCloseModal = () => {
-        dispatch(clearCurrentActiveCard());
+        dispatch(clearAndHideCurrentActiveCard());
     };
 
     const callApiUpdateCard = async (updateData) => {
@@ -76,6 +78,10 @@ const ActiveCard = () => {
         callApiUpdateCard({ title: newTitle.trim() });
     };
 
+    const onUpdateCardDescription = (newDescription) => {
+        callApiUpdateCard({ description: newDescription });
+    };
+
     const handleUploadCardCover = (e) => {
         const error = singleFileValidator(e.target?.files[0]);
         if (error) {
@@ -85,13 +91,18 @@ const ActiveCard = () => {
 
         let reqData = new FormData();
         reqData.append('cardCover', e.target?.files[0]);
+
+        toast.promise(callApiUpdateCard(reqData).finally(() => e.target.value = ''), {
+            pending: 'Uploading...'
+        })
     };
     return (
-        <Modal disableScrollLock open={true} onClose={handleCloseModal} sx={{ overflow: 'auto' }}>
+        <Modal disableScrollLock open={isShowModalActiveCard} onClose={handleCloseModal} sx={{ overflow: 'auto' }}>
             <Box
                 sx={{
                     position: 'relative',
                     width: 900,
+                    maxWidth: 900,
                     bgcolor: 'white',
                     boxShadow: 24,
                     borderRadius: '8px',
@@ -164,7 +175,10 @@ const ActiveCard = () => {
                                 </Typography>
                             </Box>
 
-                            <CardDescriptionMdEditor />
+                            <CardDescriptionMdEditor
+                                description={activeCard?.description}
+                                onUpdateDescription={onUpdateCardDescription}
+                            />
                         </Box>
 
                         <Box sx={{ mb: 3 }}>

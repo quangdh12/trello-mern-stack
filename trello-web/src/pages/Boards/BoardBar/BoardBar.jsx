@@ -4,15 +4,12 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
-import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import Tooltip from '@mui/material/Tooltip';
+import { LIMIT_USER_GROUP } from '~/utils/constants';
 import { capitalizeFirstLetter } from '~/utils/formatters';
 import BoardUserGroup from './BoardUserGroup';
-import { LIMIT_USER_GROUP } from '~/utils/constants';
 
 const MENU_STYLES = {
     color: 'white',
@@ -82,7 +79,7 @@ function BoardBar(props) {
                     Invite
                 </Button>
 
-                <BoardUserGroup boardUsers={[]} limit={LIMIT_USER_GROUP} />
+                <BoardUserGroup boardUsers={board?.allUsers} limit={LIMIT_USER_GROUP} />
             </Box>
         </Box>
     );

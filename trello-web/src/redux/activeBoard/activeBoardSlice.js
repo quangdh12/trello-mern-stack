@@ -37,7 +37,9 @@ export const activeBoardSlice = createSlice({
             if (column) {
                 const card = column.cards.find((card) => card._id === incomingCard._id)
                 if (card) {
-                    card.title = incomingCard.title
+                    Object.keys(incomingCard).forEach((key) => {
+                        card[key] = incomingCard[key]
+                    })
                 }
             }
         }
@@ -45,6 +47,8 @@ export const activeBoardSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(fetchBoardDetailsAPI.fulfilled, (state, action) => {
             let board = action.payload
+
+            board.allUsers = board.owners.concat(board.members)
 
             board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
 

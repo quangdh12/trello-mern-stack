@@ -19,6 +19,7 @@ export const WEBSITE_DOMAIN = (env.BUILD_MODE === 'production') ? env.WEBSITE_DO
 
 export const CLOUDINARY_FOLDER = {
     USERS: 'users',
+    CARD_COVERS: 'card-covers'
 }
 
 export const DEFAULT_PAGE = 1

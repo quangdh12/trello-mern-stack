@@ -5,6 +5,7 @@ import { columnModel } from './columnModel'
 import { cardModel } from './cardModel'
 import { BOARD_TYPES } from '~/utils/constants'
 import { OBJECT_ID_RULE, OBJECT_RULE_MESSAGE } from '~/utils/validator'
+import { userModel } from './userModel'
 
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
@@ -84,6 +85,24 @@ const getDetails = async (userId, boardId) => {
                     localField: '_id', // primary key
                     foreignField: 'boardId',
                     as: 'cards' // foreign key
+                }
+            },
+            {
+                $lookup: {
+                    from: userModel.USER_COLLECTION_NAME,
+                    localField: 'ownerIds', // primary key
+                    foreignField: '_id',
+                    as: 'owners', // foreign key
+                    pipeline: [{ $project: { 'password': 0, 'verifyToken': 0 } }]
+                }
+            },
+            {
+                $lookup: {
+                    from: userModel.USER_COLLECTION_NAME,
+                    localField: 'memberIds', // primary key
+                    foreignField: '_id',
+                    as: 'members', // foreign key
+                    pipeline: [{ $project: { 'password': 0, 'verifyToken': 0 } }]
                 }
             }
         ]).toArray()

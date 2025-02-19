@@ -3,18 +3,16 @@ import { CSS } from '@dnd-kit/utilities';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import CommentIcon from '@mui/icons-material/Comment';
 import GroupIcon from '@mui/icons-material/Group';
-import { Box, ClickAwayListener, Card as MuiCard, TextField } from '@mui/material';
+import { Card as MuiCard } from '@mui/material';
 import Button from '@mui/material/Button';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice';
+import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice';
 
-function Card({ card, updateTitleCard }) {
+function Card({ card }) {
     const dispatch = useDispatch();
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -35,29 +33,9 @@ function Card({ card, updateTitleCard }) {
         return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length;
     };
 
-    const [newCardTitle, setNewCardTitle] = useState(card?.title);
-    const [editTitleCardForm, setEditTitleCardForm] = useState(false);
-
-
-    const updateCard = async () => {
-        if (!newCardTitle) {
-            toast.error('Please enter title!', { position: 'top-center' });
-            return;
-        }
-
-        const newColumnData = {
-            title: newCardTitle,
-            cardId: card._id,
-            columnId: card.columnId,
-        };
-        await updateTitleCard(newColumnData);
-
-        setEditTitleCardForm(false);
-        setNewCardTitle(card?.title);
-    };
-
     const setActiveCard = () => {
         dispatch(updateCurrentActiveCard(card));
+        dispatch(showModalActiveCard());
     };
 
     return (
@@ -88,81 +66,7 @@ function Card({ card, updateTitleCard }) {
                     '&:last-child': { p: 1.5 },
                 }}
             >
-                {editTitleCardForm ? (
-                    <ClickAwayListener onClickAway={() => setEditTitleCardForm(false)}>
-                        <Box
-                            sx={{
-                                height: '100%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                gap: 1,
-                            }}
-                        >
-                            <TextField
-                                type="text"
-                                size="small"
-                                variant="outlined"
-                                autoFocus
-                                data-no-dnd="true"
-                                value={newCardTitle}
-                                onChange={(e) => setNewCardTitle(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Escape') {
-                                        setEditTitleCardForm(false);
-                                    }
-                                    if (e.key === 'Enter') {
-                                        updateCard();
-                                    }
-                                }}
-                                sx={{
-                                    '& label': { color: 'white' },
-                                    '& input': {
-                                        color: (theme) => theme.palette.primary.main,
-                                        bgcolor: (theme) =>
-                                            theme.palette.mode === 'dark' ? '#333643' : 'white',
-                                    },
-                                    '& label.Mui-focused': {
-                                        color: (theme) => theme.palette.primary.main,
-                                    },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: (theme) => theme.palette.primary.main,
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: (theme) => theme.palette.primary.main,
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: (theme) => theme.palette.primary.main,
-                                        },
-                                    },
-                                    '& .MuiOutlinedInput-input': { borderRadius: 1 },
-                                }}
-                            />
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Button
-                                    onClick={updateCard}
-                                    variant="contained"
-                                    color="primary"
-                                    data-no-dnd="true"
-                                    size="small"
-                                    sx={{
-                                        boxShadow: 'none',
-                                        border: '0.5 solid',
-                                        borderColor: '#0077B6',
-                                        '&:hover': { bgcolor: '#599AFC' },
-                                    }}
-                                >
-                                    Update
-                                </Button>
-                            </Box>
-                        </Box>
-                    </ClickAwayListener>
-                ) : (
-                    <>
-                        <Typography>{card?.title}</Typography>
-                    </>
-                )}
+                <Typography>{card?.title}</Typography>
             </CardContent>
 
             {shouldShowCardActions() && (
