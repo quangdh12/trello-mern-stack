@@ -3,7 +3,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '~/redux/user/userSlice';
 
-const CardActivitySection = () => {
+const CardActivitySection = ({cardComments = [], onAddCardComment}) => {
     const currentUser = useSelector(selectCurrentUser);
 
     const handleAddComment = (e) => {
@@ -16,6 +16,10 @@ const CardActivitySection = () => {
                 userDisplayName: currentUser?.displayName,
                 content: e.target.value.trim(),
             };
+
+            onAddCardComment(commentToAdd).then(() => {
+                e.target.value = ''
+            })
         }
     };
 
@@ -36,7 +40,7 @@ const CardActivitySection = () => {
                     onKeyDown={handleAddComment}
                 />
             </Box>
-            {[...Array(0)].length === 0 && (
+            {cardComments.length === 0 && (
                 <Typography
                     sx={{ pl: '45px', fontSize: '14px', fontWeight: 500, color: '#b1b1b1' }}
                 >
@@ -44,22 +48,22 @@ const CardActivitySection = () => {
                 </Typography>
             )}
 
-            {[...Array(6)].map((_, index) => (
+            {cardComments.map((comment, index) => (
                 <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5 }} key={index}>
                     <Tooltip title="">
                         <Avatar
                             sx={{ width: 36, height: 36, cursor: 'pointer' }}
                             alt="avatar-img"
-                            src=""
+                            src={comment?.userAvatar}
                         />
                     </Tooltip>
                     <Box sx={{ width: 'inherit' }}>
                         <Typography variant="span" sx={{ fontWeight: 'bold', mr: 1 }}>
-                            Gin Do
+                           {comment?.userDisplayName}
                         </Typography>
 
                         <Typography variant="span" sx={{ fontSize: '12px' }}>
-                            {moment().format('llll')}
+                            {moment(comment?.commentedAt).format('llll')}
                         </Typography>
 
                         <Box
@@ -75,7 +79,7 @@ const CardActivitySection = () => {
                                 boxShadow: '0 0 1px rgba(0, 0, 0, 0.2)',
                             }}
                         >
-                            This is a comment!
+                            {comment?.content}
                         </Box>
                     </Box>
                 </Box>
