@@ -24,3 +24,14 @@ export const CLOUDINARY_FOLDER = {
 
 export const DEFAULT_PAGE = 1
 export const DEFAULT_ITEMS_PER_PAGE = 10
+
+export const INVITATION_TYPES = {
+    BOARD_INVITATION: 'BOARD_INVITATION'
+}
+
+export const BOARD_INVITATION_STATUS = {
+    PENDING: 'PENDING',
+    ACCEPTED: 'ACCEPTED',
+    REJECTED: 'REJECTED'
+
+}
