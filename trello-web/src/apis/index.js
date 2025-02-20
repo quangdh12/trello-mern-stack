@@ -32,6 +32,12 @@ export const moveCartToDifferentColumnAPI = async (updateData) => {
     return response.data;
 }
 
+export const inviteUserBoardAPI = async (data) => {
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/invitations/board`, data)
+    toast.success('User invited to board successfully!')
+    return response.data
+}
+
 /** Column API */
 export const createNewColumnAPI = async (newColumnData) => {
     const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/columns`, newColumnData);

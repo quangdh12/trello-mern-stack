@@ -96,6 +96,10 @@ const ActiveCard = () => {
             pending: 'Uploading...'
         })
     };
+
+    const onAddCardComment = async(commentToAdd) => {
+        await callApiUpdateCard({ commentToAdd })
+    }
     return (
         <Modal disableScrollLock open={isShowModalActiveCard} onClose={handleCloseModal} sx={{ overflow: 'auto' }}>
             <Box
@@ -192,7 +196,7 @@ const ActiveCard = () => {
                                 </Typography>
                             </Box>
 
-                            <CardActivitySection />
+                            <CardActivitySection cardComments={activeCard?.comments} onAddCardComment={onAddCardComment}/>
                         </Box>
                     </Grid>
 
