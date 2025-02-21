@@ -21,6 +21,7 @@ import Starred from './Menu/Starred';
 import Templates from './Menu/Templates';
 import Workspaces from './Menu/Workspaces';
 import { Link } from 'react-router-dom';
+import Notifications from './Notifications/Notifications';
 
 function AppBar() {
     const [searchValue, setSearchValue] = useState('');
@@ -130,11 +131,9 @@ function AppBar() {
                     }}
                 />
                 <ModeSelect />
-                <Tooltip title="Notifications">
-                    <Badge color="warning" variant="dot" sx={{ cursor: 'pointer' }}>
-                        <NotificationsNoneIcon sx={{ color: 'white' }} />
-                    </Badge>
-                </Tooltip>
+
+                    <Notifications />
+
                 <Tooltip title="">
                     <HelpOutline sx={{ cursor: 'pointer', color: 'white' }} />
                 </Tooltip>
