@@ -44,6 +44,25 @@ const createNewBoardInvitation = async (reqBody, inviterId) => {
     }
 }
 
+const getInvitations = async (userId) => {
+    try {
+        const getInvitations = await invitationModel.findByUser(userId)
+
+        const resInvitations = getInvitations.map(item => {
+            return {
+                ...item,
+                inviter: item.inviter[0] || {},
+                invitee: item.invitee[0] || {},
+                board: item.board[0] || {}
+            }
+        })
+        return resInvitations
+    } catch (error) {
+        throw error
+    }
+}
+
 export const invitationService = {
-    createNewBoardInvitation
+    createNewBoardInvitation,
+    getInvitations
 }
