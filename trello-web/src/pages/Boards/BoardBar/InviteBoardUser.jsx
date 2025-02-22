@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { inviteUserBoardAPI } from '~/apis';
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
+import { socketIoInstance } from '~/lib/socket/sock';
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, FIELD_REQUIRED_MESSAGE } from '~/utils/validator';
 
 const InviteBoardUser = ({ boardId }) => {
@@ -21,7 +22,6 @@ const InviteBoardUser = ({ boardId }) => {
         register,
         handleSubmit,
         setValue,
-        reset,
         formState: { errors },
     } = useForm();
     const submitInviteUserToBoard = (data) => {
@@ -29,12 +29,14 @@ const InviteBoardUser = ({ boardId }) => {
         const { inviteeEmail } = data;
 
         inviteUserBoardAPI({ inviteeEmail, boardId })
-            .then(() => {
-                setValue(inviteeEmail, null);
+            .then((invitation) => {
+                setValue('inviteeEmail', null);
                 setAnchorPopoverElement(null);
-                reset()
+
+                socketIoInstance.emit('FE_USER_INVITED_TO_BOARD', invitation)
             })
             .finally(() => setValidate(false));
+
     };
 
     return (
