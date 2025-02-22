@@ -36,6 +36,8 @@ import {
 } from '~/redux/activeCard/activeCardSlice';
 import { updateCardDetailsAPI } from '~/apis';
 import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice';
+import { selectCurrentUser } from '~/redux/user/userSlice';
+import { CARD_MEMBER_ACTIONS } from '~/utils/constants';
 
 const SidebarItem = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -61,6 +63,7 @@ const ActiveCard = () => {
     const dispatch = useDispatch();
     const activeCard = useSelector(selectCurrentActiveCard);
     const isShowModalActiveCard = useSelector(selectIsShowModalActiveCard);
+    const currentUser = useSelector(selectCurrentUser);
 
     const handleCloseModal = () => {
         dispatch(clearAndHideCurrentActiveCard());
@@ -92,16 +95,29 @@ const ActiveCard = () => {
         let reqData = new FormData();
         reqData.append('cardCover', e.target?.files[0]);
 
-        toast.promise(callApiUpdateCard(reqData).finally(() => e.target.value = ''), {
-            pending: 'Uploading...'
-        })
+        toast.promise(
+            callApiUpdateCard(reqData).finally(() => (e.target.value = '')),
+            {
+                pending: 'Uploading...',
+            }
+        );
     };
 
-    const onAddCardComment = async(commentToAdd) => {
-        await callApiUpdateCard({ commentToAdd })
-    }
+    const onAddCardComment = async (commentToAdd) => {
+        await callApiUpdateCard({ commentToAdd });
+    };
+
+    const onUpdateCardMembers = async (incomingMemberInfo) => {
+        callApiUpdateCard({ incomingMemberInfo });
+    };
+
     return (
-        <Modal disableScrollLock open={isShowModalActiveCard} onClose={handleCloseModal} sx={{ overflow: 'auto' }}>
+        <Modal
+            disableScrollLock
+            open={isShowModalActiveCard}
+            onClose={handleCloseModal}
+            sx={{ overflow: 'auto' }}
+        >
             <Box
                 sx={{
                     position: 'relative',
@@ -165,7 +181,10 @@ const ActiveCard = () => {
                                 Members
                             </Typography>
 
-                            <CardUserGroup />
+                            <CardUserGroup
+                                cardMemberIds={activeCard?.memberIds}
+                                onUpdateCardMembers={onUpdateCardMembers}
+                            />
                         </Box>
 
                         <Box sx={{ mb: 3 }}>
@@ -196,7 +215,10 @@ const ActiveCard = () => {
                                 </Typography>
                             </Box>
 
-                            <CardActivitySection cardComments={activeCard?.comments} onAddCardComment={onAddCardComment}/>
+                            <CardActivitySection
+                                cardComments={activeCard?.comments}
+                                onAddCardComment={onAddCardComment}
+                            />
                         </Box>
                     </Grid>
 
@@ -205,10 +227,20 @@ const ActiveCard = () => {
                             Add To Card
                         </Typography>
                         <Stack direction={'column'} spacing={1}>
-                            <SidebarItem className="active">
-                                <PersonOutlineOutlinedIcon fontSize="small" />
-                                Join
-                            </SidebarItem>
+                            {!activeCard?.memberIds?.includes(currentUser._id) && (
+                                <SidebarItem
+                                    className="active"
+                                    onClick={() =>
+                                        onUpdateCardMembers({
+                                            userId: currentUser._id,
+                                            action: CARD_MEMBER_ACTIONS.ADD,
+                                        })
+                                    }
+                                >
+                                    <PersonOutlineOutlinedIcon fontSize="small" />
+                                    Join
+                                </SidebarItem>
+                            )}
 
                             <SidebarItem className="active" component={'label'}>
                                 <ImageOutlinedIcon fontSize="small" />

@@ -1,8 +1,16 @@
+import { CheckCircle } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-import { Avatar, Box, Popover, Tooltip } from '@mui/material';
+import { Avatar, Badge, Box, Popover, Tooltip } from '@mui/material';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice';
+import { CARD_MEMBER_ACTIONS } from '~/utils/constants';
 
-const CardUserGroup = ({ cardMemberIds = [] }) => {
+const CardUserGroup = ({ cardMemberIds = [], onUpdateCardMembers }) => {
+    const board = useSelector(selectCurrentActiveBoard);
+
+    const cardMembers = board?.allUsers?.filter((user) => cardMemberIds.includes(user._id));
+
     const [anchorPopoverElement, setAnchorPopoverElement] = useState(null);
     const isOpenPopover = Boolean(anchorPopoverElement);
     const popoverId = isOpenPopover ? 'board-all-users-popover' : undefined;
@@ -12,14 +20,26 @@ const CardUserGroup = ({ cardMemberIds = [] }) => {
         else setAnchorPopoverElement(null);
     };
 
+    const handleUpdateCardMembers = (user) => {
+        const incomingMemberInfo = {
+            userId: user._id,
+
+            action: cardMemberIds.includes(user._id)
+                ? CARD_MEMBER_ACTIONS.REMOVE
+                : CARD_MEMBER_ACTIONS.ADD,
+        };
+
+        onUpdateCardMembers(incomingMemberInfo)
+    };
+
     return (
         <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-            {[...Array(8)].map((_, index) => (
-                <Tooltip title="gindo.dev" key={index}>
+            {cardMembers.map((user) => (
+                <Tooltip title={user?.displayName} key={user._id}>
                     <Avatar
                         sx={{ width: 34, height: 34, cursor: 'pointer' }}
                         alt="avatar-img"
-                        src=""
+                        src={user?.avatar}
                     />
                 </Tooltip>
             ))}
@@ -68,13 +88,25 @@ const CardUserGroup = ({ cardMemberIds = [] }) => {
                         gap: 1.5,
                     }}
                 >
-                    {[...Array(16)].map((_, index) => (
-                        <Tooltip title="gindo.dev" key={index}>
-                            <Avatar
-                                sx={{ width: 34, height: 34, cursor: 'pointer' }}
-                                alt="avatar-img"
-                                src=""
-                            />
+                    {board?.allUsers?.map((user) => (
+                        <Tooltip title={user?.displayName} key={user._id}>
+                            <Badge
+                                sx={{ cursor: 'pointer' }}
+                                overlap="rectangular"
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                badgeContent={
+                                    cardMemberIds.includes(user._id) ? (
+                                        <CheckCircle fontSize="small" sx={{ color: '#27ae60' }} />
+                                    ) : null
+                                }
+                                onClick={() => handleUpdateCardMembers(user)}
+                            >
+                                <Avatar
+                                    sx={{ width: 34, height: 34, cursor: 'pointer' }}
+                                    alt="avatar-img"
+                                    src={user?.avatar}
+                                />
+                            </Badge>
                         </Tooltip>
                     ))}
                 </Box>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { inviteUserBoardAPI } from '~/apis';
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert';
-import { socketIoInstance } from '~/lib/socket/sock';
+import { socketIoInstance } from '~/lib/socket/socketClient';
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, FIELD_REQUIRED_MESSAGE } from '~/utils/validator';
 
 const InviteBoardUser = ({ boardId }) => {
