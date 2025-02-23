@@ -164,7 +164,7 @@ const update = async (boardId, updateData) => {
     }
 }
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilers) => {
 
     try {
         const queryConditions = [
@@ -177,6 +177,15 @@ const getBoards = async (userId, page, itemsPerPage) => {
             }
 
         ]
+
+        if (queryFilers) {
+            Object.keys(queryFilers).forEach(key => {
+                // queryConditions.push({ [key]: { $regex: queryFilers[key] } })
+
+                queryConditions.push({ [key]: { $regex: new RegExp(queryFilers[key], 'i') } })
+
+            })
+        }
 
         const query = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
             { $match: { $and: queryConditions } },

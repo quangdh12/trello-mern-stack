@@ -2,6 +2,8 @@ import { Search } from '@mui/icons-material';
 import { Autocomplete, CircularProgress, InputAdornment, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
+import { fetchBoardsAPI } from '~/apis';
+import { useDebounceFn } from '~/hooks/useDebounceFn';
 
 const AutoCompleteSearchBoard = () => {
     const navigate = useNavigate();
@@ -21,9 +23,24 @@ const AutoCompleteSearchBoard = () => {
         if (!searchValue) return;
 
         const searchPath = `?${createSearchParams({ 'q[title]': searchValue })}`;
+
+        setLoading(true);
+        fetchBoardsAPI(searchPath)
+            .then((res) => {
+                setBoards(res.boards || []);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
-    const handleSelectedBoard = (e, selectedBoard) => {};
+    const debounceSearchBoard = useDebounceFn(handleInputChangeSearch, 1000);
+
+    const handleSelectedBoard = (e, selectedBoard) => {
+        if (selectedBoard) {
+            navigate(`/boards/${selectedBoard._id}`);
+        }
+    };
 
     return (
         <Autocomplete
@@ -36,7 +53,7 @@ const AutoCompleteSearchBoard = () => {
             getOptionLabel={(board) => board.title}
             options={boards || []}
             loading={loading}
-            onInputChange={handleInputChangeSearch}
+            onInputChange={debounceSearchBoard}
             onChange={handleSelectedBoard}
             renderInput={(params) => (
                 <TextField
@@ -70,7 +87,7 @@ const AutoCompleteSearchBoard = () => {
                         },
                         '.MuiSvgIcon-root': { color: 'white' },
                     }}
-                ></TextField>
+                />
             )}
         />
     );
