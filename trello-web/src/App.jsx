@@ -19,10 +19,7 @@ function App() {
 
     return (
         <Routes>
-            <Route
-                path="/"
-                element={<Navigate to={'/boards'} replace={true} />}
-            />
+            <Route path="/" element={<Navigate to={'/boards'} replace={true} />} />
 
             <Route element={<ProtectedRoute user={currentUser} />}>
                 <Route path="/boards" element={<Boards />} />
@@ -33,11 +30,11 @@ function App() {
                 <Route path="/settings/security" element={<SettingsUser />} />
             </Route>
 
-            <Route path="*" element={<NotFound />} />
-
             <Route path="/login" element={<Auth />} />
             <Route path="/register" element={<Auth />} />
             <Route path="/account/verification" element={<AccountVerification />} />
+ 
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

@@ -1,10 +1,10 @@
 let apiRoot = ''
 
 if (import.meta.env.MODE === 'development') {
-    apiRoot = import.meta.env.API_DOMAIN_DEV
+    apiRoot = import.meta.env.VITE_API_DOMAIN_DEV
 }
 if (import.meta.env.MODE === 'production') {
-    apiRoot = import.meta.env.API_DOMAIN_PRO
+    apiRoot = import.meta.env.VITE_API_DOMAIN_PRO
 }
 
 
