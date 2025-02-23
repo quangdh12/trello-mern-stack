@@ -6,7 +6,7 @@ import AccountVerification from './pages/Auth/AccountVerification';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from './redux/user/userSlice';
 import Boards from './pages/Boards';
-import Settings from './pages/Settings/Settings';
+import SettingsUser from '~/pages/SettingsUser/SettingsUser';
 
 const ProtectedRoute = ({ user }) => {
     if (!user) return <Navigate to={'/login'} replace={true} />;
@@ -29,8 +29,8 @@ function App() {
                 <Route path="/boards/:boardId" element={<Board />} />
 
                 {/* User settings */}
-                <Route path="/settings/account" element={<Settings />} />
-                <Route path="/settings/security" element={<Settings />} />
+                <Route path="/settings/account" element={<SettingsUser />} />
+                <Route path="/settings/security" element={<SettingsUser />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

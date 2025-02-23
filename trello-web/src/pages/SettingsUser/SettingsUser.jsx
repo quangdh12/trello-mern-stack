@@ -8,7 +8,7 @@ import AccountTab from './AccountTab';
 import SecurityTab from './SecurityTab';
 import AppBar from '~/components/AppBar/AppBar';
 
-const Settings = () => {
+const SettingsUser = () => {
     const location = useLocation();
     const getDefaultTab = () => {
         if (location.pathname.includes(TABS.SECURITY)) return TABS.SECURITY;
@@ -55,4 +55,4 @@ const Settings = () => {
     );
 };
 
-export default Settings;
+export default SettingsUser;
